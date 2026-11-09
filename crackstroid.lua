@@ -327,17 +327,19 @@ local L = {
 }
 
 local function T(key, ...)
-    local ok, result = pcall(function()
+    -- Добавили ... в аргументы функции, а также передаем ... в pcall
+    local ok, result = pcall(function(...) 
         local entry = L[key]
         if not entry then return tostring(key) end
         local str = entry[Settings.Language] or entry.ru or key
-        local n = select("#", ...)
+        local n = select("#", ...) -- Теперь это работает
         if n > 0 then
             local okF, res = pcall(string.format, str, ...)
             if okF then return res end
         end
         return str
-    end)
+    end, ...) -- <-- Передаем ... из T() в нашу функцию внутри pcall
+    
     if ok then return result end
     return tostring(key)
 end
